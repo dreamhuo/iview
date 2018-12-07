@@ -165,7 +165,7 @@
                 compiledUids: [],
                 objData: this.makeObjData(),     // checkbox or highlight-row
                 rebuildData: [],    // for sort or filter
-                cloneColumns: this.makeColumns(),
+                cloneColumns: this.makeColumns(),       //header 与 body 最终会通过 cloneColumns 解析渲染出来 Columns； 会通过传入的 columns 处理
                 showSlotHeader: true,
                 showSlotFooter: true,
                 bodyHeight: 0,
@@ -397,7 +397,7 @@
                 //     }else{
                 //         this.objData[data._index]._isChecked = status;
                 //     }
-                    
+
                 // });
                 for(const data of this.rebuildData){
                     if(this.objData[data._index]._isDisabled){
@@ -578,12 +578,15 @@
                 });
                 return data;
             },
+            // 处理传入的 columns 最终会返回给 cloneColumns ，最终会传给 table-head 和 table-body 组件
             makeColumns () {
+                // 深层拷贝 通过 props 传入的 columns
                 let columns = deepCopy(this.columns);
+                // 定义 left right center 数组，分别用于存放表格的 左右侧固定，和中间固定
                 let left = [];
                 let right = [];
                 let center = [];
-
+                // 循环 columns 重新组合数组
                 columns.forEach((column, index) => {
                     column._index = index;
                     column._width = column.width ? column.width : '';    // update in handleResize()
@@ -592,16 +595,19 @@
                     column._isFiltered = false;
                     column._filterChecked = [];
 
+                    // 【配置】 数据过滤的选项是否多选
                     if ('filterMultiple' in column) {
                         column._filterMultiple = column.filterMultiple;
                     } else {
                         column._filterMultiple = true;
                     }
+                    // 【配置】 在初始化时使用过滤，数组，值为需要过滤的 value 集合
                     if ('filteredValue' in column) {
                         column._filterChecked = column.filteredValue;
                         column._isFiltered = true;
                     }
 
+                    // 重新组合 left center right 数组
                     if (column.fixed && column.fixed === 'left') {
                         left.push(column);
                     } else if (column.fixed && column.fixed === 'right') {
@@ -610,6 +616,7 @@
                         center.push(column);
                     }
                 });
+                // 合并数组返回
                 return left.concat(center).concat(right);
             },
             exportCsv (params) {

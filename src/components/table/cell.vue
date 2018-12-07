@@ -44,10 +44,13 @@
             }
         },
         methods: {
+            // 编译表格单选项
             compile () {
                 if (this.column.render) {
                     const $parent = this.content;
+                    // 这里 render 接收 3 个参数，1、row  2、column  3、index
                     const template = this.column.render(this.row, this.column, this.index);
+                    // 创建 DIV , 生成 html 片段
                     const cell = document.createElement('div');
                     cell.innerHTML = template;
                     const _oldParentChildLen = $parent.$children.length;
@@ -58,6 +61,7 @@
                         this.uid = $parent.$children[$parent.$children.length - 1]._uid;    // tag it, and delete when data or columns update
                     }
                     this.$el.innerHTML = '';
+                    // 更新 dom 节点
                     this.$el.appendChild(cell);
                 }
             },
@@ -74,12 +78,16 @@
             }
         },
         compiled () {
+            // 确定渲染类型，type 为 index 时 为index
             if (this.column.type === 'index') {
                 this.renderType = 'index';
+            // type 为 selection 时 为 Checkbox
             } else if (this.column.type === 'selection') {
                 this.renderType = 'selection';
+            // 如果有 render 函数，为 render 类型
             } else if (this.column.render) {
                 this.renderType = 'render';
+            // 否则为普通类型
             } else {
                 this.renderType = 'normal';
             }
